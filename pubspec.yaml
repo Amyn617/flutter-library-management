@@ -9,6 +9,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  http: ^1.4.0 # For making HTTP requests to the API
+  sqflite: ^2.4.2 # For SQLite database operations
+  path: ^1.9.1 # For resolving paths to the database file
 
 dev_dependencies:
   flutter_test:
