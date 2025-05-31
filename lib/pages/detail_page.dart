@@ -80,14 +80,23 @@ class _DetailPageState extends State<DetailPage> {
                             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
                       },
                       errorBuilder: (context, error, stackTrace) {
-                        return Image.network(
-                          'https://placehold.co/200x300/cccccc/333333?text=No+Image',
-                          fit: BoxFit.contain,
-                          height: 300,
-                          headers: const {
-                            'User-Agent':
-                                'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-                          },
+                        // Log the error for debugging
+                        // ignore: avoid_print
+                        print(
+                          'Image load error (DetailPage): $error for URL ${widget.book.imageUrl}',
+                        );
+                        return SizedBox(
+                          height: 300, // Match original attempted height
+                          child: Container(
+                            color: Colors.grey[200],
+                            child: Center(
+                              child: Icon(
+                                Icons.broken_image,
+                                color: Colors.grey[400],
+                                size: 50,
+                              ),
+                            ),
+                          ),
                         );
                       },
                     ),

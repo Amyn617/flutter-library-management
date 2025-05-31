@@ -1,4 +1,3 @@
-old
 # Miscellaneous
 *.class
 *.log
@@ -44,3 +43,60 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Project-specific files
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.dart_tool/
+.idea/
+.vscode/
+
+# Build artifacts
+build/
+.pub/
+.fvm/
+
+# Generated files
+*.iml
+*.lock
+*.g.dart
+*.freezed.dart
+
+# Android-specific
+android/local.properties
+android/.gradle/
+android/build/
+android/app/build/
+android/app/src/main/assets/flutter_assets/
+
+# iOS-specific
+ios/.symlinks/
+ios/Flutter/Generated.xcconfig
+ios/Flutter/App.framework/
+ios/Flutter/flutter_assets/
+ios/Pods/
+ios/.generated/
+ios/build/
+
+# macOS-specific
+macos/build/
+
+# Linux-specific
+linux/build/
+
+# Windows-specific
+windows/build/
+
+# Web-specific
+web/build/
+
+# VS Code files
+.vscode/
+
+# IDE files
+.idea/
+
+# Other
+.DS_Store
+Thumbs.db

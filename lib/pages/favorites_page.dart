@@ -75,13 +75,20 @@ class _FavoritesPageState extends State<FavoritesPage> {
                                   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
                             },
                             errorBuilder: (context, error, stackTrace) {
-                              return Image.network(
-                                'https://placehold.co/128x196/cccccc/333333?text=No+Image',
-                                fit: BoxFit.cover,
-                                headers: const {
-                                  'User-Agent':
-                                      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-                                },
+                              // Log the error for debugging
+                              // ignore: avoid_print
+                              print(
+                                'Image load error (FavoritesPage): $error for URL ${book.imageUrl}',
+                              );
+                              return Container(
+                                color: Colors.grey[200],
+                                child: Center(
+                                  child: Icon(
+                                    Icons.broken_image,
+                                    color: Colors.grey[400],
+                                    size: 40,
+                                  ),
+                                ),
                               );
                             },
                           ),
