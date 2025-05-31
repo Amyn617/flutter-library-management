@@ -1,3 +1,8 @@
+![image](https://github.com/user-attachments/assets/8613fa11-c694-4847-ab2b-15a470469295) ![image](https://github.com/user-attachments/assets/c9306967-2c6c-490d-8533-1fe40ea74a29) ![image](https://github.com/user-attachments/assets/3ef60503-895c-4d0b-98c4-17774ff35eed)
+
+
+
+
 # Livre App - Recherche de Livres et Favoris en Flutter
 
 Ce projet est une application Flutter permettant aux utilisateurs de rechercher des livres via l'API Google Books et d'enregistrer leurs livres préférés localement en utilisant SQLite (ou SharedPreferences pour le web).
