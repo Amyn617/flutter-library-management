@@ -11,37 +11,34 @@ class DetailPage extends StatefulWidget {
 }
 
 class _DetailPageState extends State<DetailPage> {
-  final DbService _dbService = DbService();
-  bool _isFavorite = false;
+  bool _isFavorited = false;
 
   @override
   void initState() {
     super.initState();
-    _checkFavoriteStatus();
+    _checkIfFavorited();
   }
 
-  Future<void> _checkFavoriteStatus() async {
-    final isFav = await _dbService.isFavorite(widget.book.id);
-    setState(() {
-      _isFavorite = isFav;
-    });
+  Future<void> _checkIfFavorited() async {
+    final isFavorited = await DbService().isItemFavorite(widget.book.id);
+    if (mounted) {
+      setState(() {
+        _isFavorited = isFavorited;
+      });
+    }
   }
 
   Future<void> _toggleFavorite() async {
-    if (_isFavorite) {
-      await _dbService.deleteItem(widget.book.id);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Removed from favorites!')),
-      );
+    if (_isFavorited) {
+      await DbService().deleteItem(widget.book.id);
     } else {
-      await _dbService.insertItem(widget.book);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Added to favorites!')),
-      );
+      await DbService().insertItem(widget.book);
     }
-    setState(() {
-      _isFavorite = !_isFavorite;
-    });
+    if (mounted) {
+      setState(() {
+        _isFavorited = !_isFavorited;
+      });
+    }
   }
 
   @override
@@ -52,8 +49,8 @@ class _DetailPageState extends State<DetailPage> {
         actions: [
           IconButton(
             icon: Icon(
-              _isFavorite ? Icons.favorite : Icons.favorite_border,
-              color: _isFavorite ? Colors.red : null,
+              _isFavorited ? Icons.favorite : Icons.favorite_border,
+              color: _isFavorited ? Colors.red : null,
             ),
             onPressed: _toggleFavorite,
           ),
@@ -62,55 +59,63 @@ class _DetailPageState extends State<DetailPage> {
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Hero(
-              tag: widget.book.id, // Unique tag for hero animation
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: Image.network(
-                  widget.book.imageUrl,
-                  height: 300,
-                  fit: BoxFit.contain,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Image.network(
-                      'https://placehold.co/200x300/cccccc/333333?text=No+Image',
-                      height: 300,
+            Center(
+              child: Hero(
+                tag: widget.book.id, // Same unique tag as in HomePage
+                child: Card(
+                  elevation: 6,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.network(
+                      widget.book.imageUrl,
                       fit: BoxFit.contain,
-                    );
-                  },
+                      height: 300, // Adjust height as needed
+                      headers: const {
+                        'User-Agent':
+                            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                      },
+                      errorBuilder: (context, error, stackTrace) {
+                        return Image.network(
+                          'https://placehold.co/200x300/cccccc/333333?text=No+Image',
+                          fit: BoxFit.contain,
+                          height: 300,
+                          headers: const {
+                            'User-Agent':
+                                'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                          },
+                        );
+                      },
+                    ),
+                  ),
                 ),
               ),
             ),
             const SizedBox(height: 20),
             Text(
               widget.book.title,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 8),
             Text(
-              'Author: ${widget.book.author}',
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 20,
-                fontStyle: FontStyle.italic,
-                color: Colors.grey,
-              ),
+              'By ${widget.book.author}',
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(color: Colors.grey[700]),
             ),
-            const SizedBox(height: 20),
-            // You can add more book details here if the API provides them
-            // e.g., description, published date, etc.
-            const Text(
-              'Detailed description of the book would go here. '
-              'This is a placeholder text to illustrate how more content '
-              'could be displayed on this page.',
+            const SizedBox(height: 16),
+            Text(
+              widget.book.description,
+              style: Theme.of(context).textTheme.bodyLarge,
               textAlign: TextAlign.justify,
-              style: TextStyle(fontSize: 16),
             ),
+            // Add more details as needed, e.g., publisher, publishedDate
           ],
         ),
       ),

@@ -10,8 +10,7 @@ class FavoritesPage extends StatefulWidget {
 }
 
 class _FavoritesPageState extends State<FavoritesPage> {
-  final DbService _dbService = DbService();
-  Future<List<Book>>? _favoritesFuture;
+  late Future<List<Book>> _favoriteBooks;
 
   @override
   void initState() {
@@ -21,26 +20,21 @@ class _FavoritesPageState extends State<FavoritesPage> {
 
   void _loadFavorites() {
     setState(() {
-      _favoritesFuture = _dbService.getItems();
+      _favoriteBooks = DbService().getItems();
     });
   }
 
-  Future<void> _deleteFavorite(String id) async {
-    await _dbService.deleteItem(id);
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Book removed from favorites.')),
-    );
-    _loadFavorites(); // Reload the list after deletion
+  void _removeFavorite(String bookId) async {
+    await DbService().deleteItem(bookId);
+    _loadFavorites(); // Refresh the list after deleting
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Favorites'),
-      ),
+      appBar: AppBar(title: const Text('Favorites')),
       body: FutureBuilder<List<Book>>(
-        future: _favoritesFuture,
+        future: _favoriteBooks,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -52,7 +46,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
             return GridView.builder(
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
-                childAspectRatio: 0.7, // Adjust as needed
+                childAspectRatio: 0.7,
                 crossAxisSpacing: 10,
                 mainAxisSpacing: 10,
               ),
@@ -66,19 +60,28 @@ class _FavoritesPageState extends State<FavoritesPage> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Expanded(
                         child: ClipRRect(
-                          borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+                          borderRadius: const BorderRadius.vertical(
+                            top: Radius.circular(10),
+                          ),
                           child: Image.network(
                             book.imageUrl,
                             fit: BoxFit.cover,
-                            width: double.infinity,
+                            headers: const {
+                              'User-Agent':
+                                  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                            },
                             errorBuilder: (context, error, stackTrace) {
                               return Image.network(
                                 'https://placehold.co/128x196/cccccc/333333?text=No+Image',
                                 fit: BoxFit.cover,
-                                width: double.infinity,
+                                headers: const {
+                                  'User-Agent':
+                                      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                                },
                               );
                             },
                           ),
@@ -89,24 +92,32 @@ class _FavoritesPageState extends State<FavoritesPage> {
                         child: Text(
                           book.title,
                           textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                          maxLines: 2,
                           overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),
-                      Text(
-                        book.author,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(fontSize: 14, color: Colors.grey),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                      Padding(
+                        padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                        child: Text(
+                          book.author,
+                          textAlign: TextAlign.center,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey,
+                          ),
+                        ),
                       ),
-                      IconButton(
-                        icon: const Icon(Icons.delete, color: Colors.red),
-                        onPressed: () => _deleteFavorite(book.id),
+                      Padding(
+                        padding: const EdgeInsets.all(4.0),
+                        child: TextButton.icon(
+                          icon: const Icon(Icons.delete, color: Colors.red),
+                          label: const Text(
+                            'Remove',
+                            style: TextStyle(color: Colors.red),
+                          ),
+                          onPressed: () => _removeFavorite(book.id),
+                        ),
                       ),
                     ],
                   ),
