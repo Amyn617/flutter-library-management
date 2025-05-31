@@ -61,6 +61,11 @@ class DbService {
     }
   }
 
+  // Add alias method for compatibility
+  Future<void> addItem(Book item) async {
+    await insertItem(item);
+  }
+
   Future<List<Book>> getItems() async {
     if (isWeb) {
       return await _getItemsWeb();
